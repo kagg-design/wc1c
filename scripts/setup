@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+project_dir=$PWD
+
+. ~/Scripts/development/woocommerce woocommerce-1c
+
+if [[ ! -L ./wp-content/plugins/woocommerce-and-1centerprise-data-exchange ]]; then
+  ln -s $project_dir ./wp-content/plugins/woocommerce-and-1centerprise-data-exchange
+  wp plugin activate woocommerce-and-1centerprise-data-exchange
+fi
+
+mkdir -p $project_dir/uploads/catalog
+
+rm -fr ./wp-content/uploads/woocommerce-1c
+ln -fsT $project_dir/uploads ./wp-content/uploads/woocommerce-1c
