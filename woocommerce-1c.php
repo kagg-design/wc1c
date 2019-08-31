@@ -39,7 +39,7 @@ function wc1c_plugins_loaded() {
   $languages_dir = WC1C_PLUGIN_BASEDIR . $plugin_data['DomainPath'];
   load_plugin_textdomain('woocommerce-1c', false, $languages_dir);
 
-  $revision = trim(str_replace('Revision', '', '$Revision: 1466555 $'), "$: ");
+  $revision = trim(str_replace('Revision', '', '$Revision: 2026568 $'), "$: ");
   define('WC1C_VERSION', sprintf("%sr%s", $plugin_data['Version'], $revision));
 }
 add_action('plugins_loaded', 'wc1c_plugins_loaded');
@@ -63,8 +63,18 @@ function wc1c_activate() {
   if (!is_dir(WC1C_DATA_DIR)) mkdir(WC1C_DATA_DIR);
   file_put_contents(WC1C_DATA_DIR . ".htaccess", "Deny from all");
   file_put_contents(WC1C_DATA_DIR . "index.html", '');
+
+  wc1c_add_rewrite_rules();
+  flush_rewrite_rules();
 }
 register_activation_hook(__FILE__, 'wc1c_activate');
+
+register_deactivation_hook(__FILE__, 'flush_rewrite_rules');
+
+function wc1c_add_rewrite_rules() {
+  add_rewrite_rule("wc1c/exchange", "index.php?wc1c=exchange", 'top');
+  add_rewrite_rule("wc1c/clean", "index.php?wc1c=clean");
+}
 
 function wc1c_delete_term($term_id, $tt_id, $taxonomy, $deleted_term) {
   global $wpdb;
