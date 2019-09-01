@@ -1,4 +1,6 @@
 <?php
+// phpcs:disable WordPress.PHP.NoSilencedErrors.Discouraged
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
