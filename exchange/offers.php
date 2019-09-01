@@ -84,7 +84,7 @@ function wc1c_offers_end_element_handler( $is_full, $names, $depth, $name ) {
 			update_option( 'wc1c_currency', $wc1c_price_type['Валюта'] );
 		}
 	} elseif ( 'Цены' === @$names[ $depth - 1 ] && 'Цена' === $name ) {
-		if ( ! isset( $wc1c_offer['Цена'] ) ) {
+		if ( ! isset( $wc1c_offer['Цена'] ) && ( ! isset( $wc1c_price['ИдТипаЦены'] ) || $wc1c_price['ИдТипаЦены'] === $wc1c_price_type['Ид'] ) ) {
 			$wc1c_offer['Цена'] = $wc1c_price;
 		}
 	} elseif ( 'ХарактеристикаТовара' === @$names[ $depth - 1 ] && 'Наименование' === $name ) {
