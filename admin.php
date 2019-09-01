@@ -54,7 +54,8 @@ function wc1c_woocommerce_attribute_taxonomy_compare( $a, $b ) {
 }
 
 function wc1c_woocommerce_attribute_taxonomies( $attribute_taxonomies ) {
-	if ( is_admin() && 'product_attributes' === @$_GET['page'] ) {
+	$page = isset( $_GET['page'] ) ? $_GET['page'] : '';
+	if ( is_admin() && 'product_attributes' === $page ) {
 		$guids = get_option( 'wc1c_guid_attributes', array() );
 
 		foreach ( $attribute_taxonomies as $attribute_taxonomy ) {
