@@ -19,16 +19,20 @@ function wc1c_orders_start_element_handler( $is_full, $names, $depth, $name, $at
 	} elseif ( 'Товары' === @$names[ $depth - 1 ] && 'Товар' === $name ) {
 		$wc1c_document['Товары'][] = array();
 	} elseif ( 'Товар' === @$names[ $depth - 1 ] && 'ЗначенияРеквизитов' === $name ) {
-		$i                                                   = count( $wc1c_document['Товары'] ) - 1;
+		$i = count( $wc1c_document['Товары'] ) - 1;
+
 		$wc1c_document['Товары'][ $i ]['ЗначенияРеквизитов'] = array();
 	} elseif ( 'Товар' === @$names[ $depth - 2 ] && 'ЗначенияРеквизитов' === @$names[ $depth - 1 ] && 'ЗначениеРеквизита' === $name ) {
-		$i                                                     = count( $wc1c_document['Товары'] ) - 1;
+		$i = count( $wc1c_document['Товары'] ) - 1;
+
 		$wc1c_document['Товары'][ $i ]['ЗначенияРеквизитов'][] = array();
 	} elseif ( 'Товар' === @$names[ $depth - 1 ] && 'ХарактеристикиТовара' === $name ) {
-		$i                                                     = count( $wc1c_document['Товары'] ) - 1;
+		$i = count( $wc1c_document['Товары'] ) - 1;
+
 		$wc1c_document['Товары'][ $i ]['ХарактеристикиТовара'] = array();
 	} elseif ( 'Товар' === @$names[ $depth - 2 ] && 'ХарактеристикиТовара' === @$names[ $depth - 1 ] && 'ХарактеристикаТовара' === $name ) {
-		$i                                                       = count( $wc1c_document['Товары'] ) - 1;
+		$i = count( $wc1c_document['Товары'] ) - 1;
+
 		$wc1c_document['Товары'][ $i ]['ХарактеристикиТовара'][] = array();
 	} elseif ( 'Документ' === @$names[ $depth - 1 ] && 'ЗначенияРеквизитов' === $name ) {
 		$wc1c_document['ЗначенияРеквизитов'] = array();
@@ -40,23 +44,36 @@ function wc1c_orders_start_element_handler( $is_full, $names, $depth, $name, $at
 function wc1c_orders_character_data_handler( $is_full, $names, $depth, $name, $data ) {
 	global $wc1c_document;
 
-	if ( 'КоммерческаяИнформация' === @$names[ $depth - 2 ] && 'Документ' === @$names[ $depth - 1 ] && ! in_array( $name, array(
-			'Контрагенты',
-			'Товары',
-			'ЗначенияРеквизитов'
-		) ) ) {
+	if (
+		'КоммерческаяИнформация' === @$names[ $depth - 2 ] && 'Документ' === @$names[ $depth - 1 ] && ! in_array(
+			$name,
+			array(
+				'Контрагенты',
+				'Товары',
+				'ЗначенияРеквизитов',
+			),
+			true
+		)
+	) {
 		@$wc1c_document[ $name ] .= $data;
 	} elseif ( 'Контрагенты' === @$names[ $depth - 2 ] && 'Контрагент' === @$names[ $depth - 1 ] ) {
 		$i = count( $wc1c_document['Контрагенты'] ) - 1;
 
 		@$wc1c_document['Контрагенты'][ $i ][ $name ] .= $data;
 
-	} elseif ( 'Товары' === @$names[ $depth - 2 ] && 'Товар' === @$names[ $depth - 1 ] && ! in_array( $name, array(
-			'СтавкиНалогов',
-			'ЗначенияРеквизитов',
-			'ХарактеристикиТовара'
-		) ) ) {
+	} elseif (
+		'Товары' === @$names[ $depth - 2 ] && 'Товар' === @$names[ $depth - 1 ] && ! in_array(
+			$name,
+			array(
+				'СтавкиНалогов',
+				'ЗначенияРеквизитов',
+				'ХарактеристикиТовара',
+			),
+			true
+		)
+	) {
 		$i = count( $wc1c_document['Товары'] ) - 1;
+
 		@$wc1c_document['Товары'][ $i ][ $name ] .= $data;
 	} elseif ( 'Товар' === @$names[ $depth - 3 ] && 'ЗначенияРеквизитов' === @$names[ $depth - 2 ] && 'ЗначениеРеквизита' === @$names[ $depth - 1 ] ) {
 		$i = count( $wc1c_document['Товары'] ) - 1;
@@ -72,6 +89,14 @@ function wc1c_orders_character_data_handler( $is_full, $names, $depth, $name, $d
 	}
 }
 
+/**
+ * @param $is_full
+ * @param $names
+ * @param $depth
+ * @param $name
+ *
+ * @throws WC_Data_Exception
+ */
 function wc1c_orders_end_element_handler( $is_full, $names, $depth, $name ) {
 	global $wpdb, $wc1c_document;
 
@@ -86,7 +111,7 @@ function wc1c_orders_end_element_handler( $is_full, $names, $depth, $name ) {
 }
 
 /**
- * Replace documnet products
+ * Replace document products
  *
  * @param WC_Order $order Order.
  * @param array $document_products Document products.
@@ -111,7 +136,7 @@ function wc1c_replace_document_products( $order, $document_products ) {
 
 		$current_line_item_id = null;
 		foreach ( $line_items as $line_item_id => $line_item ) {
-			if ( $line_item['product_id'] != $product->get_id() || (int) $line_item['variation_id'] != $product->variation_id ) {
+			if ( (int) $line_item['product_id'] !== $product->get_id() || (int) $line_item['variation_id'] !== $product->variation_id ) {
 				continue;
 			}
 
@@ -137,7 +162,8 @@ function wc1c_replace_document_products( $order, $document_products ) {
 	foreach ( $document_products as $document_product ) {
 		$quantity    = isset( $document_product['Количество'] ) ? wc1c_parse_decimal( $document_product['Количество'] ) : 1;
 		$coefficient = isset( $document_product['Коэффициент'] ) ? wc1c_parse_decimal( $document_product['Коэффициент'] ) : 1;
-		$quantity    *= $coefficient;
+
+		$quantity *= $coefficient;
 
 		if ( ! empty( $document_product['Сумма'] ) ) {
 			$total = wc1c_parse_decimal( $document_product['Сумма'] );
@@ -213,11 +239,12 @@ function wc1c_replace_document_services( $order, $document_services ) {
 	$shipping_cost_sum = 0;
 	foreach ( $document_services as $document_service ) {
 		foreach ( $shipping_methods as $shipping_method_id => $shipping_method ) {
-			if ( $document_service['Наименование'] != $shipping_method->title ) {
+			if ( $document_service['Наименование'] !== $shipping_method->title ) {
 				continue;
 			}
 
-			$shipping_cost     = wc1c_parse_decimal( $document_service['Сумма'] );
+			$shipping_cost = wc1c_parse_decimal( $document_service['Сумма'] );
+
 			$shipping_cost_sum += $shipping_cost;
 
 			$method_title = isset( $shipping_method->method_title ) ? $shipping_method->method_title : '';
@@ -267,7 +294,7 @@ add_filter( 'woocommerce_new_order_data', 'wc1c_woocommerce_new_order_data' );
 function wc1c_replace_document( $document ) {
 	global $wpdb;
 
-	if ( $document['ХозОперация'] != 'Заказ товара' || $document['Роль'] != 'Продавец' ) {
+	if ( 'Заказ товара' !== $document['ХозОперация'] || 'Продавец' !== $document['Роль'] ) {
 		return;
 	}
 
@@ -284,7 +311,16 @@ function wc1c_replace_document( $document ) {
 			$user_id = 0;
 		} elseif ( strpos( $contragent_name, ' ' ) !== false ) {
 			list( $first_name, $last_name ) = explode( ' ', $contragent_name, 2 );
-			$result = $wpdb->get_var( $wpdb->prepare( "SELECT u1.user_id FROM $wpdb->usermeta u1 JOIN $wpdb->usermeta u2 ON u1.user_id = u2.user_id WHERE (u1.meta_key = 'billing_first_name' AND u1.meta_value = %s AND u2.meta_key = 'billing_last_name' AND u2.meta_value = %s) OR (u1.meta_key = 'shipping_first_name' AND u1.meta_value = %s AND u2.meta_key = 'shipping_last_name' AND u2.meta_value = %s)", $first_name, $last_name, $first_name, $last_name ) );
+
+			$result = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT u1.user_id FROM $wpdb->usermeta u1 JOIN $wpdb->usermeta u2 ON u1.user_id = u2.user_id WHERE (u1.meta_key = 'billing_first_name' AND u1.meta_value = %s AND u2.meta_key = 'billing_last_name' AND u2.meta_value = %s) OR (u1.meta_key = 'shipping_first_name' AND u1.meta_value = %s AND u2.meta_key = 'shipping_last_name' AND u2.meta_value = %s)",
+					$first_name,
+					$last_name,
+					$first_name,
+					$last_name
+				)
+			);
 			wc1c_check_wpdb_error();
 			if ( $result ) {
 				$user_id = $result;
@@ -327,7 +363,7 @@ function wc1c_replace_document( $document ) {
 
 		$is_paid = false;
 		foreach ( $document['ЗначенияРеквизитов'] as $requisite ) {
-			if ( ! in_array( $requisite['Наименование'], array( 'Дата оплаты по 1С', 'Дата отгрузки по 1С' ) ) ) {
+			if ( ! in_array( $requisite['Наименование'], array( 'Дата оплаты по 1С', 'Дата отгрузки по 1С' ), true ) ) {
 				continue;
 			}
 
@@ -340,7 +376,7 @@ function wc1c_replace_document( $document ) {
 
 		$is_passed = false;
 		foreach ( $document['ЗначенияРеквизитов'] as $requisite ) {
-			if ( $requisite['Наименование'] != 'Проведен' || $requisite['Значение'] != 'true' ) {
+			if ( 'Проведен' !== $requisite['Наименование'] || 'true' !== $requisite['Значение'] ) {
 				continue;
 			}
 
@@ -357,7 +393,7 @@ function wc1c_replace_document( $document ) {
 
 	$is_deleted = false;
 	foreach ( $document['ЗначенияРеквизитов'] as $requisite ) {
-		if ( $requisite['Наименование'] != 'ПометкаУдаления' || $requisite['Значение'] != 'true' ) {
+		if ( 'ПометкаУдаления' !== $requisite['Наименование'] || 'true' !== $requisite['Значение'] ) {
 			continue;
 		}
 
@@ -365,7 +401,7 @@ function wc1c_replace_document( $document ) {
 		break;
 	}
 
-	if ( $is_deleted && $order->post_status != 'trash' ) {
+	if ( $is_deleted && 'trash' !== $order->post_status ) {
 		wp_trash_post( $order->get_id() );
 	} elseif ( ! $is_deleted && 'trash' === $order->post_status ) {
 		wp_untrash_post( $order->get_id() );
@@ -384,7 +420,7 @@ function wc1c_replace_document( $document ) {
 	if ( isset( $document['Товары'] ) ) {
 		foreach ( $document['Товары'] as $i => $document_product ) {
 			foreach ( $document_product['ЗначенияРеквизитов'] as $document_product_requisite ) {
-				if ( $document_product_requisite['Наименование'] != 'ТипНоменклатуры' ) {
+				if ( 'ТипНоменклатуры' !== $document_product_requisite['Наименование'] ) {
 					continue;
 				}
 
