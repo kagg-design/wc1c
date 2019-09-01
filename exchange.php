@@ -497,6 +497,7 @@ function wc1c_xml_parse_head( $fp ) {
 		}
 
 		if ( false === strpos( $buffer, ' СодержитТолькоИзменения=' ) && false === strpos( $buffer, '<СодержитТолькоИзменения>' ) ) {
+			$buffer = fgets( $fp );
 			continue;
 		}
 
