@@ -179,6 +179,9 @@ function wc1c_strict_error_handler( $errno, $errstr, $errfile, $errline, $errcon
 	return false;
 }
 
+/**
+ * @param Exception $exception
+ */
 function wc1c_strict_exception_handler( $exception ) {
 	$message = sprintf( '%s in %s on line %d', $exception->getMessage(), $exception->getFile(), $exception->getLine() );
 	wc1c_error( $message, 'Exception' );
@@ -470,6 +473,7 @@ function wc1c_xml_parse( $fp ) {
 	$filename  = basename( $meta_data['uri'] );
 
 	while ( ! ( $is_final = feof( $fp ) ) ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_fread
 		$data = fread( $fp, 4096 );
 		if ( false === $data ) {
 			wc1c_error( sprintf( 'Failed to read from file %s', $filename ) );
