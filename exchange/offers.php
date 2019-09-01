@@ -62,6 +62,8 @@ function wc1c_offers_character_data_handler( $is_full, $names, $depth, $name, $d
 function wc1c_offers_end_element_handler( $is_full, $names, $depth, $name ) {
 	global $wpdb, $wc1c_price_types, $wc1c_price_type, $wc1c_price_type, $wc1c_offer, $wc1c_suboffers, $wc1c_price;
 
+	do_action( 'wc1c_before_offers', $is_full, $names, $depth, $name );
+
 	if ( 'ПакетПредложений' === @$names[ $depth - 1 ] && 'ТипыЦен' === $name ) {
 		if ( ! WC1C_PRICE_TYPE ) {
 			$wc1c_price_type = $wc1c_price_types[0];
