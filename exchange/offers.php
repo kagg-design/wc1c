@@ -37,8 +37,10 @@ function wc1c_offers_character_data_handler( $is_full, $names, $depth, $name, $d
 
 	if ( 'ТипыЦен' === @$names[ $depth - 2 ] && 'ТипЦены' === @$names[ $depth - 1 ] && 'Налог' !== $name ) {
 		$i = count( $wc1c_price_types ) - 1;
+
 		@$wc1c_price_types[ $i ][ $name ] .= $data;
-	} elseif ( 'Предложения' === @$names[ $depth - 2 ] && 'Предложение' === @$names[ $depth - 1 ] && ! in_array(
+	} elseif (
+		'Предложения' === @$names[ $depth - 2 ] && 'Предложение' === @$names[ $depth - 1 ] && ! in_array(
 			$name,
 			array(
 				'БазоваяЕдиница',
@@ -86,7 +88,8 @@ function wc1c_offers_end_element_handler( $is_full, $names, $depth, $name ) {
 			$wc1c_offer['Цена'] = $wc1c_price;
 		}
 	} elseif ( 'ХарактеристикаТовара' === @$names[ $depth - 1 ] && 'Наименование' === $name ) {
-		$i                                                        = count( $wc1c_offer['ХарактеристикиТовара'] ) - 1;
+		$i = count( $wc1c_offer['ХарактеристикиТовара'] ) - 1;
+
 		$wc1c_offer['ХарактеристикиТовара'][ $i ]['Наименование'] = preg_replace( '/\s+\(.*\)$/', '', $wc1c_offer['ХарактеристикиТовара'][ $i ]['Наименование'] );
 	} elseif ( 'Предложения' === @$names[ $depth - 1 ] && 'Предложение' === $name ) {
 		if ( strpos( $wc1c_offer['Ид'], '#' ) === false || WC1C_DISABLE_VARIATIONS ) {
@@ -103,6 +106,7 @@ function wc1c_offers_end_element_handler( $is_full, $names, $depth, $name ) {
 			unset( $_post_id );
 		} else {
 			$guid = $wc1c_offer['Ид'];
+
 			list( $product_guid, ) = explode( '#', $guid, 2 );
 
 			if ( empty( $wc1c_suboffers ) || $wc1c_suboffers[0]['product_guid'] !== $product_guid ) {
@@ -182,7 +186,6 @@ function wc1c_replace_offer_post_meta( $is_full, $post_id, $offer, $attributes =
 	}
 
 	if ( ! is_null( $price ) ) {
-		$sale_price      = @$current_post_meta['_sale_price'];
 		$sale_price_from = @$current_post_meta['_sale_price_dates_from'];
 		$sale_price_to   = @$current_post_meta['_sale_price_dates_to'];
 		if ( empty( $current_post_meta['_sale_price'] ) ) {
