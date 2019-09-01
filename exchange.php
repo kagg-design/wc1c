@@ -154,20 +154,18 @@ function wc1c_strict_error_handler( $errno, $errstr, $errfile, $errline, $errcon
 	// phpcs:enable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting
 
 	switch ( $errno ) {
-		// case E_NOTICE:
-		// case E_USER_NOTICE:
-		//   $type = "Notice";
-		//   break;
-		// case E_WARNING:
-		// case E_USER_WARNING:
-		//   $type = "Warning";
-		//   break;
+		case E_NOTICE:
+		case E_USER_NOTICE:
+		case E_WARNING:
+		case E_USER_WARNING:
+			return false;
 		case E_ERROR:
 		case E_USER_ERROR:
 			$type = 'Fatal Error';
 			break;
 		default:
 			$type = 'Unknown Error';
+			break;
 	}
 	if ( ! isset( $type ) ) {
 		return false;
