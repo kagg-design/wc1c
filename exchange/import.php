@@ -115,9 +115,11 @@ function wc1c_import_character_data_handler( $is_full, $names, $depth, $name, $d
 		@$wc1c_product['Пересчет'][ $name ] .= $data;
 	} elseif ( 'Товар' === @$names[ $depth - 2 ] && 'Группы' === @$names[ $depth - 1 ] && 'Ид' === $name ) {
 		$i = count( $wc1c_product['Группы'] ) - 1;
+
 		@$wc1c_product['Группы'][ $i ] .= $data;
 	} elseif ( 'Товары' === @$names[ $depth - 2 ] && 'Товар' === @$names[ $depth - 1 ] && 'Картинка' === $name ) {
 		$i = count( $wc1c_product['Картинка'] ) - 1;
+
 		@$wc1c_product['Картинка'][ $i ] .= $data;
 	} elseif ( 'Товар' === @$names[ $depth - 2 ] && 'Изготовитель' === @$names[ $depth - 1 ] ) {
 		@$wc1c_product['Изготовитель'][ $name ] .= $data;
@@ -199,6 +201,7 @@ function wc1c_import_end_element_handler( $is_full, $names, $depth, $name ) {
 			unset( $_post_id );
 		} else {
 			$guid = $wc1c_product['Ид'];
+
 			list( $product_guid, ) = explode( '#', $guid, 2 );
 
 			if ( empty( $wc1c_subproducts ) || $wc1c_subproducts[0]['product_guid'] !== $product_guid ) {
@@ -796,6 +799,7 @@ function wc1c_replace_product( $is_full, $guid, $product ) {
 	$post_name = apply_filters( 'wc1c_import_product_slug', $post_name, $product, $is_full );
 
 	$description = isset( $product['Описание'] ) ? $product['Описание'] : '';
+
 	list( $is_added, $post_id, $post_meta ) = wc1c_replace_post( $guid, 'product', $is_deleted, $is_draft, $post_title, $post_name, $description, $post_content, $post_meta, 'product_cat', @$product['Группы'], $preserve_fields );
 
 	$current_product_attributes = isset( $post_meta['_product_attributes'] ) ? maybe_unserialize( $post_meta['_product_attributes'] ) : array();
