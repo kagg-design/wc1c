@@ -8,6 +8,8 @@
  * Plugin URI:
  * Text Domain: woocommerce-1c
  * Domain Path: /languages
+ * WC requires at least: 3.0
+ * WC tested up to: 3.7
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
