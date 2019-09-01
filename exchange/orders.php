@@ -111,7 +111,7 @@ function wc1c_replace_document_products( $order, $document_products ) {
 
 		$current_line_item_id = null;
 		foreach ( $line_items as $line_item_id => $line_item ) {
-			if ( $line_item['product_id'] != $product->id || (int) $line_item['variation_id'] != $product->variation_id ) {
+			if ( $line_item['product_id'] != $product->get_id() || (int) $line_item['variation_id'] != $product->variation_id ) {
 				continue;
 			}
 
@@ -298,11 +298,11 @@ function wc1c_replace_document( $document ) {
 		wc1c_check_wp_error( $order );
 
 		if ( ! isset( $user_id ) ) {
-			update_post_meta( $order->id, 'wc1c_contragent', $contragent_name );
+			update_post_meta( $order->get_id(), 'wc1c_contragent', $contragent_name );
 		}
 
 		$args = array(
-			'ID' => $order->id,
+			'ID' => $order->get_id(),
 		);
 
 		$date = @$document['Дата'];
@@ -318,10 +318,10 @@ function wc1c_replace_document( $document ) {
 			wc1c_error( 'Failed to update order post' );
 		}
 
-		update_post_meta( $order->id, '_wc1c_guid', $document['Ид'] );
+		update_post_meta( $order->get_id(), '_wc1c_guid', $document['Ид'] );
 	} else {
 		$args = array(
-			'order_id' => $order->id,
+			'order_id' => $order->get_id(),
 			'status'   => 'on-hold',
 		);
 
@@ -366,9 +366,9 @@ function wc1c_replace_document( $document ) {
 	}
 
 	if ( $is_deleted && $order->post_status != 'trash' ) {
-		wp_trash_post( $order->id );
+		wp_trash_post( $order->get_id() );
 	} elseif ( ! $is_deleted && 'trash' === $order->post_status ) {
-		wp_untrash_post( $order->id );
+		wp_untrash_post( $order->get_id() );
 	}
 
 	$post_meta = array();
@@ -401,7 +401,7 @@ function wc1c_replace_document( $document ) {
 	wc1c_replace_document_products( $order, $document_products );
 	$post_meta['_order_shipping'] = wc1c_replace_document_services( $order, $document_services );
 
-	$current_post_meta = get_post_meta( $order->id );
+	$current_post_meta = get_post_meta( $order->get_id() );
 	foreach ( $current_post_meta as $meta_key => $meta_value ) {
 		$current_post_meta[ $meta_key ] = $meta_value[0];
 	}
@@ -412,6 +412,6 @@ function wc1c_replace_document( $document ) {
 			continue;
 		}
 
-		update_post_meta( $order->id, $meta_key, $meta_value );
+		update_post_meta( $order->get_id(), $meta_key, $meta_value );
 	}
 }
